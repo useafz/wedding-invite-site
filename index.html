@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>صانع دعوات الزفاف - تصميم احترافي</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@700&family=Cairo:wght@400;700&family=Lalezar&family=Markazi+Text:wght@500&family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <style>
+        html { scroll-behavior: smooth; }
+        body { font-family: 'Tajawal', sans-serif; background-color: #fdf8f2; padding-top: 70px; /* Add padding for fixed navbar */ }
+        #invitation-card { transition: all 0.4s ease-in-out; position: relative; overflow: hidden; background-size: cover; background-position: center; }
+        .form-input, .form-select { transition: all 0.2s ease-in-out; }
+        .form-input:focus, .form-select:focus { border-color: #c7a17a; box-shadow: 0 0 0 2px rgba(199, 161, 122, 0.2); outline: none; }
+        .btn-primary { background-color: #8d6e63; color: white; transition: background-color 0.3s; }
+        .btn-primary:hover { background-color: #795548; }
+        .btn-secondary { background-color: #a1887f; color: white; transition: background-color 0.3s; }
+        .btn-secondary:hover { background-color: #8d6e63; }
+        .control-label.selected { border-color: #3b82f6 !important; box-shadow: 0 0 0 2px #bfdbfe; }
+        
+        .font-cairo { font-family: 'Cairo', sans-serif; }
+        .font-amiri { font-family: 'Amiri', serif; }
+        .font-lalezar { font-family: 'Lalezar', cursive; }
+        .font-markazi { font-family: 'Markazi Text', serif; }
+        .font-tajawal { font-family: 'Tajawal', sans-serif; }
+
+        #card-content::before {
+            content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #000; opacity: 0; transition: opacity 0.4s ease-in-out; z-index: 1;
+        }
+        #invitation-card.has-bg #card-content::before { opacity: 0.45; }
+        #card-content > * { position: relative; z-index: 2; }
+
+        .template-1 { background-color: #fdfaf6; border: 1px solid #e2d9c9; }
+        .template-2 { background-color: #f5f5f5; border: 8px solid #e0e0e0; }
+        .template-3 { background-color: #ffffff; border: 2px dashed #bcaaa4; }
+        .template-4 { background-color: #fde2e4; border: 1px solid #f9c6c9; }
+        .template-5 { background-color: #2b2b2b; border: 2px solid #d4af37; }
+
+        .palette-1 { --primary-color: #8d6e63; --secondary-color: #5d4037; --accent-color: #c7a17a; }
+        .palette-2 { --primary-color: #4a5568; --secondary-color: #2d3748; --accent-color: #a0aec0; }
+        .palette-3 { --primary-color: #c53030; --secondary-color: #7b1d1d; --accent-color: #f56565; }
+        .palette-4 { --primary-color: #7c6a92; --secondary-color: #564766; --accent-color: #c3aed6; }
+        .palette-5 { --primary-color: #d4af37; --secondary-color: #ffffff; --accent-color: #f0e68c; }
+
+        .text-primary { color: var(--primary-color); }
+        .text-secondary { color: var(--secondary-color); }
+        .bg-accent { background-color: var(--accent-color); }
+        .fill-accent { fill: var(--accent-color); }
+
+        .decoration { position: absolute; opacity: 0.6; transition: all 0.3s; display: none; z-index: 3; }
+        .template-1 .decoration-1, .template-2 .decoration-2, .template-3 .decoration-3, .template-4 .decoration-4 { display: block; }
+    </style>
+</head>
+<body class="bg-[#fdf8f2]">
+
+    <!-- Navbar -->
+    <nav class="bg-white/80 backdrop-blur-lg shadow-sm fixed top-0 left-0 right-0 z-50">
+        <div class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <a href="#" class="text-2xl font-bold text-[#6d4c41] font-amiri">دعوتي 💍</a>
+                </div>
+                <div class="hidden md:block">
+                    <a href="#editor" class="px-4 py-2 bg-[#8d6e63] text-white text-sm font-bold rounded-md shadow-sm hover:bg-[#795548] transition-colors">
+                        ابدأ التصميم
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Landing Page Section -->
+    <header id="home" class="text-center pt-16 pb-20 px-4 bg-white" style="background-image: url('https://www.transparenttextures.com/patterns/subtle-white-feathers.png');">
+        <h1 class="text-4xl sm:text-5xl md:text-6xl font-bold text-[#6d4c41] font-amiri">صمّم دعوة فرحك بنفسك</h1>
+        <p class="text-lg sm:text-xl mt-4 text-[#a1887f] max-w-2xl mx-auto">بخطوات بسيطة، اصنع دعوة زفاف فريدة تعبر عن فرحتك. اختر القالب، عدّل التفاصيل، وحمّلها فوراً!</p>
+        <a href="#editor" class="inline-block mt-8 px-8 py-3 bg-[#8d6e63] text-white text-lg font-bold rounded-lg shadow-lg hover:bg-[#795548] transition-colors">
+            ابدأ التصميم الآن ✨
+        </a>
+    </header>
+
+    <!-- Features Section -->
+    <section id="features" class="py-16 bg-[#fdf8f2]">
+        <div class="container mx-auto px-4">
+            <h2 class="text-3xl font-bold text-center mb-12 text-[#6d4c41]">لماذا تختار مصمم الدعوات؟</h2>
+            <div class="grid md:grid-cols-3 gap-8 text-center">
+                <div class="bg-white p-6 rounded-xl shadow-md transform hover:scale-105 transition-transform duration-300">
+                    <div class="text-5xl mb-4">🎨</div>
+                    <h3 class="text-xl font-bold mb-2">قوالب متنوعة</h3>
+                    <p>اختر من بين مجموعة من التصاميم الجاهزة: كلاسيكية، عصرية، فخمة، والمزيد.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl shadow-md transform hover:scale-105 transition-transform duration-300">
+                    <div class="text-5xl mb-4">🖌️</div>
+                    <h3 class="text-xl font-bold mb-2">تخصيص كامل</h3>
+                    <p>تحكم بالألوان، الخطوط، الخلفيات، والنصوص لتصنع دعوة على ذوقك.</p>
+                </div>
+                 <div class="bg-white p-6 rounded-xl shadow-md transform hover:scale-105 transition-transform duration-300">
+                    <div class="text-5xl mb-4">📥</div>
+                    <h3 class="text-xl font-bold mb-2">تحميل فوري</h3>
+                    <p>احصل على دعوتك بصيغة صورة PNG أو ملف PDF عالية الجودة بضغطة زر.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Editor Section -->
+    <main id="editor" class="container mx-auto max-w-7xl p-4 sm:p-8">
+        <div class="flex flex-col lg:flex-row gap-8">
+            <div class="w-full lg:w-1/3 bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+                <form id="invitation-form" class="space-y-6">
+                    <fieldset>
+                        <legend class="font-bold text-lg mb-2 text-gray-700">1. معلومات الدعوة</legend>
+                        <div class="space-y-4">
+                            <input type="text" id="groom-name" class="w-full p-2 border rounded-md form-input" value="أحمـد" placeholder="اسم العريس">
+                            <input type="text" id="bride-name" class="w-full p-2 border rounded-md form-input" value="فاطمـة" placeholder="اسم العروسة">
+                            <input type="text" id="event-date" class="w-full p-2 border rounded-md form-input" value="السبت، 25 ديسمبر 2025" placeholder="التاريخ واليوم">
+                            <input type="text" id="event-time" class="w-full p-2 border rounded-md form-input" value="الثامنة مساءً" placeholder="الساعة">
+                            <input type="text" id="event-location" class="w-full p-2 border rounded-md form-input" value="قاعة اللوتس - فندق جراند حياة" placeholder="المكان">
+                        </div>
+                    </fieldset>
+                    
+                    <fieldset>
+                        <legend class="font-bold text-lg mb-3 text-gray-700">2. تخصيص التصميم</legend>
+                        <div class="space-y-5">
+                            <!-- Template -->
+                            <div>
+                                <label class="block mb-2 font-semibold">القالب</label>
+                                <div class="grid grid-cols-3 gap-2">
+                                    <label><input type="radio" name="template" value="template-1" class="sr-only" checked><div class="p-2 border-2 rounded-lg cursor-pointer text-center bg-gray-100 control-label text-sm">كلاسيكي</div></label>
+                                    <label><input type="radio" name="template" value="template-2" class="sr-only"><div class="p-2 border-2 rounded-lg cursor-pointer text-center bg-gray-100 control-label text-sm">عصري</div></label>
+                                    <label><input type="radio" name="template" value="template-3" class="sr-only"><div class="p-2 border-2 rounded-lg cursor-pointer text-center bg-gray-100 control-label text-sm">بسيط</div></label>
+                                    <label><input type="radio" name="template" value="template-4" class="sr-only"><div class="p-2 border-2 rounded-lg cursor-pointer text-center bg-gray-100 control-label text-sm">رومانسي</div></label>
+                                    <label><input type="radio" name="template" value="template-5" class="sr-only"><div class="p-2 border-2 rounded-lg cursor-pointer text-center bg-gray-100 control-label text-sm">فخم</div></label>
+                                </div>
+                            </div>
+                            <!-- Background -->
+                            <div>
+                                <label class="block mb-2 font-semibold">الخلفية</label>
+                                <div class="grid grid-cols-3 gap-2">
+                                    <label><input type="radio" name="background" value="none" class="sr-only" checked><div class="h-16 border-2 rounded-lg cursor-pointer flex items-center justify-center bg-gray-100 control-label">بدون</div></label>
+                                    <label><input type="radio" name="background" value="bg-1" class="sr-only"><div class="h-16 border-2 rounded-lg cursor-pointer bg-cover bg-center control-label" style="background-image: url(https://images.pexels.com/photos/3299905/pexels-photo-3299905.jpeg?auto=compress&cs=tinysrgb&w=120&h=120&dpr=1);"></div></label>
+                                    <label><input type="radio" name="background" value="bg-2" class="sr-only"><div class="h-16 border-2 rounded-lg cursor-pointer bg-cover bg-center control-label" style="background-image: url(https://images.pexels.com/photos/1730877/pexels-photo-1730877.jpeg?auto=compress&cs=tinysrgb&w=120&h=120&dpr=1);"></div></label>
+                                </div>
+                            </div>
+                             <!-- Colors -->
+                            <div>
+                               <label class="block mb-2 font-semibold">الألوان</label>
+                                <div class="grid grid-cols-3 sm:grid-cols-5 gap-2">
+                                    <label><input type="radio" name="palette" value="palette-1" class="sr-only" checked><div class="p-2 h-10 border-2 rounded-lg cursor-pointer flex gap-1 bg-gray-100 control-label"><span class="w-1/2 h-full rounded" style="background: #8d6e63;"></span><span class="w-1/2 h-full rounded" style="background: #5d4037;"></span></div></label>
+                                    <label><input type="radio" name="palette" value="palette-2" class="sr-only"><div class="p-2 h-10 border-2 rounded-lg cursor-pointer flex gap-1 bg-gray-100 control-label"><span class="w-1/2 h-full rounded" style="background: #4a5568;"></span><span class="w-1/2 h-full rounded" style="background: #2d3748;"></span></div></label>
+                                    <label><input type="radio" name="palette" value="palette-3" class="sr-only"><div class="p-2 h-10 border-2 rounded-lg cursor-pointer flex gap-1 bg-gray-100 control-label"><span class="w-1/2 h-full rounded" style="background: #c53030;"></span><span class="w-1/2 h-full rounded" style="background: #7b1d1d;"></span></div></label>
+                                    <label><input type="radio" name="palette" value="palette-4" class="sr-only"><div class="p-2 h-10 border-2 rounded-lg cursor-pointer flex gap-1 bg-gray-100 control-label"><span class="w-1/2 h-full rounded" style="background: #7c6a92;"></span><span class="w-1/2 h-full rounded" style="background: #c3aed6;"></span></div></label>
+                                    <label><input type="radio" name="palette" value="palette-5" class="sr-only"><div class="p-2 h-10 border-2 rounded-lg cursor-pointer flex gap-1 bg-gray-100 control-label"><span class="w-1/2 h-full rounded" style="background: #d4af37;"></span><span class="w-1/2 h-full rounded" style="background: #fff;"></span></div></label>
+                                </div>
+                            </div>
+                            <!-- Font -->
+                            <div>
+                                <label for="font-select" class="block mb-1 font-semibold">الخط</label>
+                                <select id="font-select" class="w-full p-2 border rounded-md form-select bg-white">
+                                    <option value="font-tajawal">Tajawal (عصري)</option>
+                                    <option value="font-amiri">Amiri (تراثي)</option>
+                                    <option value="font-cairo">Cairo (بسيط)</option>
+                                    <option value="font-lalezar">Lalezar (جريء)</option>
+                                    <option value="font-markazi">Markazi (رسمي)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+
+            <div class="w-full lg:w-2/3">
+                <div class="bg-white p-6 rounded-xl shadow-lg border border-gray-200">
+                    <h2 class="text-2xl font-bold mb-4 text-center">معاينة الدعوة</h2>
+                    <div id="invitation-card" class="w-full aspect-[3/4] max-w-md mx-auto rounded-lg">
+                        <div id="card-content" class="w-full h-full p-8 flex flex-col items-center justify-center text-center">
+                            <p class="text-2xl text-secondary">دعــوة زفـــاف</p>
+                            <p class="my-4 text-lg text-secondary">نتشرف بدعوتكم لحضور حفل زفاف</p>
+                            <h2 id="preview-groom" class="text-4xl md:text-5xl font-bold text-primary">أحمـد</h2>
+                            <p class="text-3xl my-2 text-primary">&</p>
+                            <h2 id="preview-bride" class="text-4xl md:text-5xl font-bold text-primary">فاطمـة</h2>
+                            <div class="my-6 w-32 h-px bg-accent mx-auto"></div>
+                            <p id="preview-date" class="text-lg font-semibold text-secondary"></p>
+                            <p id="preview-time" class="text-lg text-secondary"></p>
+                            <p id="preview-location" class="text-lg font-bold mt-2 text-secondary"></p>
+                        </div>
+                        <div class="decoration decoration-1 fill-accent" style="width: 150px; height: 150px; top: -20px; left: -20px;"><svg viewBox="0 0 100 100"><path d="M50,0 C77.6,0 100,22.4 100,50 C100,61.2 95.8,71.5 88.8,79.5 C83.2,85.6 76,90.2 68,93 C63.2,92.8 58.5,91.6 54.2,89.6 C42.2,84.2 33.2,74 28.2,62 C24.6,53.2 25.2,43.4 29.8,35 C35.4,24.8 45.4,18 56.6,16.2 C54.4,10.6 52.8,5.2 50,0z"></path></svg></div>
+                        <div class="decoration decoration-1 fill-accent" style="width: 150px; height: 150px; bottom: -20px; right: -20px; transform: rotate(180deg);"><svg viewBox="0 0 100 100"><path d="M50,0 C77.6,0 100,22.4 100,50 C100,61.2 95.8,71.5 88.8,79.5 C83.2,85.6 76,90.2 68,93 C63.2,92.8 58.5,91.6 54.2,89.6 C42.2,84.2 33.2,74 28.2,62 C24.6,53.2 25.2,43.4 29.8,35 C35.4,24.8 45.4,18 56.6,16.2 C54.4,10.6 52.8,5.2 50,0z"></path></svg></div>
+                        <div class="decoration decoration-2 bg-accent" style="width: 100%; height: 15px; top: 0; left: 0;"></div>
+                        <div class="decoration decoration-2 bg-accent" style="width: 100%; height: 15px; bottom: 0; left: 0;"></div>
+                        <div class="decoration decoration-3 border-accent" style="width: 95%; height: 95%; top: 2.5%; left: 2.5%; border: 1px solid;"></div>
+                        <div class="decoration decoration-4" style="width: 100px; height: 100px; top: 10px; right: 10px;"><svg class="fill-accent" viewBox="0 0 200 200"><path d="M100 20C55.8 20 20 55.8 20 100s35.8 80 80 80 80-35.8 80-80-35.8-80-80-80zm0 140c-33.1 0-60-26.9-60-60s26.9-60 60-60 60 26.9 60 60-26.9 60-60 60z" /><path d="M100 46.5c-1.4 0-2.8.1-4.1.4 11.8 4.2 21.3 13.6 25.5 25.5.2-1.3.4-2.7.4-4.1 0-29.5-23.9-53.5-53.5-53.5-1.4 0-2.8.1-4.1.4 4.2-11.8 13.6-21.3 25.5-25.5.2 1.3.4 2.7.4 4.1zM91.8 111.3l-14.6-10.8 22.9-1.9-8.3-25.5 20.3 14.8-13.7-22.1 2.8 22.9L120 73l-20.2 13.9 14.5 10.9-22.5-1.5z"/></svg></div>
+                    </div>
+                    <div class="mt-6 flex flex-col sm:flex-row justify-center gap-4">
+                        <button id="download-png-btn" class="w-full sm:w-auto px-6 py-3 rounded-lg font-semibold btn-secondary">تحميل PNG</button>
+                        <button id="download-pdf-btn" class="w-full sm:w-auto px-6 py-3 rounded-lg font-semibold btn-secondary">تحميل PDF</button>
+                    </div>
+                    <div id="loading" class="text-center mt-2 text-gray-500" style="display: none;">جاري التحضير...</div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white mt-16 py-6">
+        <div class="container mx-auto px-4 text-center text-gray-600">
+            <p>&copy; 2024 - تصميم وتطوير يوسف اسامة</p>
+        </div>
+    </footer>
+
+    <!-- Success Modal -->
+    <div id="success-modal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4" style="display: none; z-index: 999;">
+        <div class="bg-white rounded-xl shadow-lg p-8 text-center max-w-sm mx-auto">
+            <div class="text-6xl mb-4">🎉</div>
+            <h3 class="text-2xl font-bold text-gray-800">تم بنجاح!</h3>
+            <p id="success-message" class="text-gray-600 mt-2 mb-6">تم تحميل دعوتك بنجاح.</p>
+            <button id="close-modal-btn" class="px-6 py-2 bg-[#8d6e63] text-white rounded-lg hover:bg-[#795548]">حسنًا</button>
+        </div>
+    </div>
+
+    <script>
+        const { jsPDF } = window.jspdf;
+        const form = document.getElementById('invitation-form');
+        const invitationCard = document.getElementById('invitation-card');
+        const loadingIndicator = document.getElementById('loading');
+        const successModal = document.getElementById('success-modal');
+        const successMessage = document.getElementById('success-message');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+        
+        const backgroundSources = {
+            'none': 'none',
+            'bg-1': 'url(https://images.pexels.com/photos/3299905/pexels-photo-3299905.jpeg?auto=compress&cs=tinysrgb&w=600&h=800&dpr=1)',
+            'bg-2': 'url(https://images.pexels.com/photos/1730877/pexels-photo-1730877.jpeg?auto=compress&cs=tinysrgb&w=600&h=800&dpr=1)'
+        };
+
+        function applyCustomizations() {
+            document.getElementById('preview-groom').textContent = document.getElementById('groom-name').value;
+            document.getElementById('preview-bride').textContent = document.getElementById('bride-name').value;
+            document.getElementById('preview-date').textContent = document.getElementById('event-date').value;
+            document.getElementById('preview-time').textContent = document.getElementById('event-time').value;
+            document.getElementById('preview-location').textContent = document.getElementById('event-location').value;
+            
+            let newClasses = [];
+            const selectedTemplate = document.querySelector('input[name="template"]:checked').value;
+            newClasses.push(selectedTemplate);
+            const selectedPalette = document.querySelector('input[name="palette"]:checked').value;
+            newClasses.push(selectedPalette);
+            const selectedFont = document.getElementById('font-select').value;
+            newClasses.push(selectedFont);
+            
+            const selectedBg = document.querySelector('input[name="background"]:checked').value;
+            invitationCard.style.backgroundImage = backgroundSources[selectedBg];
+            if (selectedBg !== 'none') newClasses.push('has-bg');
+            
+            invitationCard.className = `w-full aspect-[3/4] max-w-md mx-auto rounded-lg ${newClasses.join(' ')}`;
+            
+            document.querySelectorAll('.control-label').forEach(el => el.classList.remove('selected'));
+            document.querySelectorAll('input[type="radio"]:checked').forEach(radio => radio.nextElementSibling.classList.add('selected'));
+        }
+
+        form.addEventListener('input', applyCustomizations);
+        window.addEventListener('load', applyCustomizations);
+
+        function showSuccessModal(format) {
+            successMessage.textContent = `تم تحميل ملف ${format} الخاص بك بنجاح!`;
+            successModal.style.display = 'flex';
+        }
+
+        closeModalBtn.addEventListener('click', () => {
+            successModal.style.display = 'none';
+        });
+
+        async function handleDownload(format) {
+            loadingIndicator.style.display = 'block';
+            
+            const canvas = await html2canvas(invitationCard, { scale: 3, useCORS: true, allowTaint: true })
+                .catch(e => {
+                    console.error("Error with html2canvas:", e);
+                    loadingIndicator.style.display = 'none';
+                    alert("عذراً، حدث خطأ أثناء تجهيز الصورة.");
+                });
+            
+            if (!canvas) return;
+
+            if (format === 'png') {
+                const link = document.createElement('a');
+                link.download = 'wedding-invitation.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+                showSuccessModal('PNG');
+            } else if (format === 'pdf') {
+                const imgData = canvas.toDataURL('image/png');
+                const cardWidth = invitationCard.offsetWidth;
+                const cardHeight = invitationCard.offsetHeight;
+                const pdf = new jsPDF({
+                    orientation: cardWidth > cardHeight ? 'l' : 'p',
+                    unit: 'px',
+                    format: [cardWidth, cardHeight]
+                });
+                pdf.addImage(imgData, 'PNG', 0, 0, cardWidth, cardHeight);
+                pdf.save('wedding-invitation.pdf');
+                showSuccessModal('PDF');
+            }
+
+            loadingIndicator.style.display = 'none';
+        }
+
+        document.getElementById('download-png-btn').addEventListener('click', () => handleDownload('png'));
+        document.getElementById('download-pdf-btn').addEventListener('click', () => handleDownload('pdf'));
+    </script>
+</body>
+</html>
